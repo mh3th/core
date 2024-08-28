@@ -7,6 +7,7 @@
 node_modules/
 dist/
 target/
+web/pages/index.html
 
 # IDE
 .vscode/*
