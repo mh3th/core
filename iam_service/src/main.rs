@@ -1,4 +1,4 @@
-use account_service::hosts;
+use iam_service::hosts;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -15,6 +15,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
+
     let main_server_task = tokio::spawn(hosts::start_main_host());
     let metrics_server_task = tokio::spawn(hosts::start_metrics_host());
     tokio::select! {

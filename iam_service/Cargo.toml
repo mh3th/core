@@ -1,5 +1,5 @@
 [package]
-name = "account_service"
+name = "iam_service"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,7 +8,7 @@ path = "src/libs.rs"
 
 [[bin]]
 path = "src/main.rs"
-name = "account_service"
+name = "iam_service"
 
 [dependencies]
 axum = { version = "0.7.5", features = ["tracing"] }

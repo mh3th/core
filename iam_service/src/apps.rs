@@ -12,23 +12,20 @@ use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
 use std::future::ready;
 use std::time::Duration;
 use tokio::time::Instant;
-use tower::ServiceBuilder;
 use tower_http::{classify::ServerErrorsFailureClass, trace::TraceLayer};
 use tower_http::{compression::CompressionLayer, timeout::TimeoutLayer};
 use tracing::{info_span, Span};
 
-use crate::endpoints;
+use crate::handlers;
 
 async fn handler() -> Html<&'static str> {
     Html("<h1>Hello, World!</h1>")
 }
 
-
 pub fn main_app() -> anyhow::Result<Router> {
     let router = Router::new()
         .route("/", get(handler))
-        .route("/test", get(handler))
-        .fallback(endpoints::fallback::handler)
+        .fallback(handlers::fallback::handler)
         .route_layer(middleware::from_fn(track_metrics))
         .layer(
             TraceLayer::new_for_http()
