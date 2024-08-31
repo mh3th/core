@@ -3,13 +3,6 @@ name = "iam_service"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-path = "src/libs.rs"
-
-[[bin]]
-path = "src/main.rs"
-name = "iam_service"
-
 [dependencies]
 axum = { version = "0.7.5", features = ["tracing"] }
 listenfd = "1.0.1"
@@ -21,3 +14,4 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 metrics = { version = "0.23.0", default-features = false }
 metrics-exporter-prometheus = { version = "0.15.3", default-features = false }
 anyhow = "1.0.86"
+dotenvy = "0.15.7"

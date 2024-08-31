@@ -1,22 +1,9 @@
 use anyhow::Context;
 use axum::Router;
 use listenfd::ListenFd;
-
 use tokio::{net::TcpListener, signal};
 
-use crate::apps::{main_app, metrics_app};
-
-pub async fn start_main_host() -> anyhow::Result<()> {
-    let app = main_app().context("failed to create main app")?;
-    start_host(app, 3000).await
-}
-
-pub async fn start_metrics_host() -> anyhow::Result<()> {
-    let app = metrics_app().context("failed to create metrics app")?;
-    start_host(app, 3001).await
-}
-
-async fn start_host(router: Router, port: u16) -> anyhow::Result<()> {
+pub async fn start_host(router: Router, port: u16) -> anyhow::Result<()> {
     let mut listenfd = ListenFd::from_env();
     let listener = match listenfd
         .take_tcp_listener(0)
