@@ -1,21 +1,17 @@
-use tokio::time::Instant;
-
 use axum::{
     body::Body,
     extract::{MatchedPath, Request},
     middleware::Next,
     response::IntoResponse,
 };
+use tokio::time::Instant;
 use tower_http::{
     classify::{ServerErrorsAsFailures, SharedClassifier},
     trace::TraceLayer,
 };
 use tracing::{info_span, Span};
-
-pub fn tracer_layer() -> TraceLayer<
-    SharedClassifier<ServerErrorsAsFailures>,
-    impl Fn(&axum::http::Request<Body>) -> Span + Clone,
-> {
+pub fn tracer_layer(
+) -> TraceLayer<SharedClassifier<ServerErrorsAsFailures>, impl Fn(&Request<Body>) -> Span + Clone> {
     TraceLayer::new_for_http().make_span_with(|request: &Request<Body>| {
         let matched_path = request
             .extensions()
@@ -28,7 +24,6 @@ pub fn tracer_layer() -> TraceLayer<
             some_other_field = tracing::field::Empty,
         )
     })
-    
 }
 pub async fn track_metrics(req: Request, next: Next) -> impl IntoResponse {
     let start = Instant::now();
