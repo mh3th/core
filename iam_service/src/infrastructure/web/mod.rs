@@ -14,20 +14,21 @@ pub async fn start_main_host(port: u16) -> anyhow::Result<()> {
         .route("/", get(routes::root))
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))
-        .layer(
-            TraceLayer::new_for_http().make_span_with(|request: &Request<_>| {
-                let matched_path = request
-                    .extensions()
-                    .get::<MatchedPath>()
-                    .map(MatchedPath::as_str);
-                info_span!(
-                    "http_request",
-                    method = ?request.method(),
-                    matched_path,
-                    some_other_field = tracing::field::Empty,
-                )
-            }),
-        )
+        .layer(middlewares::test())
+        // .layer(
+        //     TraceLayer::new_for_http().make_span_with(|request: &Request<_>| {
+        //         let matched_path = request
+        //             .extensions()
+        //             .get::<MatchedPath>()
+        //             .map(MatchedPath::as_str);
+        //         info_span!(
+        //             "http_request",
+        //             method = ?request.method(),
+        //             matched_path,
+        //             some_other_field = tracing::field::Empty,
+        //         )
+        //     }),
+        // )
         .layer(TimeoutLayer::new(Duration::from_secs(10)))
         .layer(CompressionLayer::new());
     servers::start_host(app, port).await
