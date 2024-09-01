@@ -1,19 +1,22 @@
-use std::convert::Infallible;
-
 use tokio::time::Instant;
 
 use axum::{
-    body::Body, extract::{MatchedPath, Request}, middleware::Next, response::IntoResponse, routing::Route
+    body::Body,
+    extract::{MatchedPath, Request},
+    middleware::Next,
+    response::IntoResponse,
 };
-use tower::{Layer, Service};
 use tower_http::{
-    classify::{ClassifyResponse, MakeClassifier, ServerErrorsAsFailures, SharedClassifier},
-    trace::{DefaultMakeSpan, DefaultOnResponse, HttpMakeClassifier, TraceLayer},
+    classify::{ServerErrorsAsFailures, SharedClassifier},
+    trace::TraceLayer,
 };
 use tracing::{info_span, Span};
-pub fn test() -> TraceLayer<SharedClassifier<ServerErrorsAsFailures>, impl Fn(&axum::http::Request<Body>) -> Span+Clone>  {
-    let a: TraceLayer<SharedClassifier<tower_http::classify::ServerErrorsAsFailures>>= TraceLayer::new_for_http();
-    let b = a.make_span_with(|request: &Request<Body>| {
+
+pub fn tracer_layer() -> TraceLayer<
+    SharedClassifier<ServerErrorsAsFailures>,
+    impl Fn(&axum::http::Request<Body>) -> Span + Clone,
+> {
+    TraceLayer::new_for_http().make_span_with(|request: &Request<Body>| {
         let matched_path = request
             .extensions()
             .get::<MatchedPath>()
@@ -24,8 +27,8 @@ pub fn test() -> TraceLayer<SharedClassifier<ServerErrorsAsFailures>, impl Fn(&a
             matched_path,
             some_other_field = tracing::field::Empty,
         )
-    });
-    b
+    })
+    
 }
 pub async fn track_metrics(req: Request, next: Next) -> impl IntoResponse {
     let start = Instant::now();
