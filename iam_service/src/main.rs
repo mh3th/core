@@ -16,13 +16,13 @@ async fn main() -> anyhow::Result<()> {
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
                 format!(
-                    "{}=debug,tower_http=debug,axum::rejection=trace",
+                    "{}=trace,tower_http=trace,axum::rejection=trace,sqlx=trace",
                     cargo_create_name
                 )
                 .into()
             }),
         )
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer().pretty())
         .init();
 
     let configuration =

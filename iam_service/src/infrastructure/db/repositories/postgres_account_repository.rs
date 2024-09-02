@@ -35,7 +35,6 @@ impl AccountCreateRepository for PostgresAccountRepository {
         )
         .execute(&self.db.pg_pool)
         .await?;
-
         Ok(account)
     }
 }
@@ -73,7 +72,6 @@ impl AccountFindRepository for PostgresAccountRepository {
         )
         .fetch_optional(&self.db.pg_pool)
         .await?;
-
         Ok(account)
     }
 }

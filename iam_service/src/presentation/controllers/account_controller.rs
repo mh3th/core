@@ -3,7 +3,7 @@ use axum::{extract::Json, http::StatusCode, response::IntoResponse, Extension};
 use serde::Deserialize;
 use std::sync::Arc;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct CreateAccountRequest {
     pub username: String,
     pub email: String,
