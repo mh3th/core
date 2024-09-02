@@ -5,10 +5,10 @@ use crate::domain::repositories::account_repository::AccountFindRepository;
 use axum::async_trait;
 use sqlx::Error;
 
-/// Сценарий использования для поиска аккаунта по email.
+/// Сценарий использования для поиска аккаунта по username.
 #[async_trait]
 pub trait FindAccountUseCase {
-    async fn execute(&self, email: String) -> Result<Option<Account>, Error>;
+    async fn execute(&self, username: String) -> Result<Option<Account>, Error>;
 }
 
 /// Реализация FindAccountUseCase.
@@ -30,7 +30,7 @@ impl<UCR> FindAccountUseCase for FindAccount<UCR>
 where
     UCR: AccountFindRepository + Sync + Send,
 {
-    async fn execute(&self, email: String) -> Result<Option<Account>, Error> {
-        self.repository.find_by_email(email).await
+    async fn execute(&self, username: String) -> Result<Option<Account>, Error> {
+        self.repository.find_by_username(username).await
     }
 }

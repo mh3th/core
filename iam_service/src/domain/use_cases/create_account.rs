@@ -11,7 +11,6 @@ pub trait CreateAccountUseCase {
     async fn execute(
         &self,
         username: String,
-        email: String,
         hashed_password: String,
     ) -> Result<Account, Error>;
 }
@@ -38,10 +37,9 @@ where
     async fn execute(
         &self,
         username: String,
-        email: String,
         hashed_password: String,
     ) -> Result<Account, Error> {
-        let account = Account::new(username, email, hashed_password);
+        let account = Account::new(username, hashed_password);
         self.repository.create(account).await
     }
 }

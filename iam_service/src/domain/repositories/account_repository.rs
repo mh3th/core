@@ -15,8 +15,8 @@ pub trait AccountReadRepository {
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Account>, Error>;
 }
 
-/// Трейт для поиска аккаунта по email.
+/// Трейт для поиска аккаунта по username.
 #[async_trait]
 pub trait AccountFindRepository {
-    async fn find_by_email(&self, email: String) -> Result<Option<Account>, Error>;
+    async fn find_by_username(&self, username: String) -> Result<Option<Account>, Error>;
 }

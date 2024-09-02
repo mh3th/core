@@ -25,12 +25,11 @@ impl AccountCreateRepository for PostgresAccountRepository {
     async fn create(&self, account: Account) -> Result<Account, Error> {
         sqlx::query!(
             r#"
-            INSERT INTO accounts (id, username, email, hashed_password)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO accounts (id, username, hashed_password)
+            VALUES ($1, $2, $3)
             "#,
             account.id,
             account.username,
-            account.email,
             account.hashed_password
         )
         .execute(&self.db.pg_pool)
@@ -45,7 +44,7 @@ impl AccountReadRepository for PostgresAccountRepository {
         let account = sqlx::query_as!(
             Account,
             r#"
-            SELECT id, username, email, hashed_password
+            SELECT id, username, hashed_password
             FROM accounts
             WHERE id = $1
             "#,
@@ -60,15 +59,15 @@ impl AccountReadRepository for PostgresAccountRepository {
 
 #[async_trait]
 impl AccountFindRepository for PostgresAccountRepository {
-    async fn find_by_email(&self, email: String) -> Result<Option<Account>, Error> {
+    async fn find_by_username(&self, username: String) -> Result<Option<Account>, Error> {
         let account = sqlx::query_as!(
             Account,
             r#"
-            SELECT id, username, email, hashed_password
+            SELECT id, username, hashed_password
             FROM accounts
-            WHERE email = $1
+            WHERE username = $1
             "#,
-            email
+            username
         )
         .fetch_optional(&self.db.pg_pool)
         .await?;

@@ -6,7 +6,6 @@ use std::sync::Arc;
 #[derive(Deserialize, Debug)]
 pub struct CreateAccountRequest {
     pub username: String,
-    pub email: String,
     pub password: String,
 }
 
@@ -15,7 +14,7 @@ pub async fn create_account_handler(
     Json(payload): Json<CreateAccountRequest>,
 ) -> impl IntoResponse {
     match account_service
-        .create_account(payload.username, payload.email, payload.password)
+        .create_account(payload.username, payload.password)
         .await
     {
         Ok(account) => (StatusCode::CREATED, Json(account)).into_response(),

@@ -32,11 +32,10 @@ impl AccountService {
     pub async fn create_account(
         &self,
         username: String,
-        email: String,
         hashed_password: String,
     ) -> Result<Account, Error> {
         self.create_account_use_case
-            .execute(username, email, hashed_password)
+            .execute(username, hashed_password)
             .await
     }
 
@@ -45,8 +44,8 @@ impl AccountService {
         self.read_account_use_case.execute(id).await
     }
 
-    /// Ищет аккаунт по email.
-    pub async fn find_account(&self, email: String) -> Result<Option<Account>, Error> {
-        self.find_account_use_case.execute(email).await
+    /// Ищет аккаунт по username.
+    pub async fn find_account(&self, username: String) -> Result<Option<Account>, Error> {
+        self.find_account_use_case.execute(username).await
     }
 }
