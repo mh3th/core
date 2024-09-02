@@ -1,3 +1,3 @@
-pub mod web;
+pub mod http;
 pub mod db;
 pub mod security;

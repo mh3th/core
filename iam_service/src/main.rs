@@ -1,7 +1,13 @@
+use std::sync::Arc;
+
 use anyhow::Context;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod domain;
 mod infrastructure;
+mod configuration;
+mod application;
+mod presentation;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -18,33 +24,17 @@ async fn main() -> anyhow::Result<()> {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
-    dotenvy::from_path_override(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".env"))
-        .context("Failed to load .env file")?;
-    let main_port_env_str = format!("{}_MAIN_PORT", cargo_create_name).to_uppercase();
-    let main_port_env: u16 = std::env::var(main_port_env_str.to_owned())
-        .context(format!(
-            "Must be set to the {} server will listen on",
-            main_port_env_str
-        ))?
-        .parse()
-        .context(format!(
-            "The {} server port must be a valid u16",
-            main_port_env_str
-        ))?;
-    let metrics_port_env_str = format!("{}_METRICS_PORT", cargo_create_name).to_uppercase();
-    let metrics_port_env: u16 = std::env::var(metrics_port_env_str.to_owned())
-        .context(format!(
-            "Must be set to the {} server will listen on",
-            metrics_port_env_str
-        ))?
-        .parse()
-        .context(format!(
-            "The {} server port must be a valid u16",
-            metrics_port_env_str
-        ))?;
-    let main_server_task = tokio::spawn(infrastructure::web::start_main_host(main_port_env));
+
+    let configuration = Arc::new(configuration::Configuration::from_env().context("Failed to load configuration")?);
+    let db_connection = Arc::new(infrastructure::db::connections::Connections::new(&configuration.database_url).await.context("Failed to connect to database")?);
+    let account_repository = Arc::new(infrastructure::db::repositories::postgres_account_repository::PostgresAccountRepository::new(db_connection.clone()));
+    let create_account_use_case = Arc::new(domain::use_cases::create_account::CreateAccount::new(account_repository.clone()));
+    let read_account_use_case = Arc::new(domain::use_cases::read_account::ReadAccount::new(account_repository.clone()));
+    let find_account_use_case = Arc::new(domain::use_cases::find_account::FindAccount::new(account_repository.clone()));
+    let account_service = Arc::new(application::services::account_service::AccountService::new(create_account_use_case.clone(), read_account_use_case.clone(), find_account_use_case.clone()));
+    let main_server_task = tokio::spawn(infrastructure::http::start_main_host(configuration.main_port));
     let metrics_server_task =
-        tokio::spawn(infrastructure::web::start_metrics_host(metrics_port_env));
+        tokio::spawn(infrastructure::http::start_metrics_host(configuration.metrics_port));
     tokio::select! {
         o = main_server_task => report_exit("main server", o),
         o = metrics_server_task => report_exit("metrics server", o),
