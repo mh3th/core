@@ -1,37 +1,28 @@
-use axum::{
-    extract::{Extension, Json},
-    response::IntoResponse,
-    http::StatusCode,
-};
-use crate::domain::use_cases::create_account::CreateAccount;
-use crate::infrastructure::db::connection::DbConnection;
+use crate::application::services::account_service::AccountService;
+use axum::{extract::Json, http::StatusCode, response::IntoResponse, Extension};
 use serde::Deserialize;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct CreateAccountRequest {
-    username: String,
-    email: String,
-    password: String,
+    pub username: String,
+    pub email: String,
+    pub password: String,
 }
 
 pub async fn create_account_handler(
+    Extension(account_service): Extension<Arc<AccountService>>,
     Json(payload): Json<CreateAccountRequest>,
-    Extension(db): Extension<DbConnection>,
 ) -> impl IntoResponse {
-    let hashed_password = hash_password(payload.password);
-
-    let use_case = CreateAccount { db: &db };
-
-    match use_case
-        .execute(payload.username, payload.email, hashed_password)
+    match account_service
+        .create_account(payload.username, payload.email, payload.password)
         .await
     {
         Ok(account) => (StatusCode::CREATED, Json(account)).into_response(),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, "Failed to create account").into_response(),
+        Err(err) => {
+            // Логирование ошибки и возвращение ответа
+            tracing::error!("Failed to create account: {:?}", err);
+            (StatusCode::INTERNAL_SERVER_ERROR, err.to_string()).into_response()
+        }
     }
-}
-
-fn hash_password(password: String) -> String {
-    // Реализуйте функцию хэширования пароля, например, используя bcrypt
-    password
 }

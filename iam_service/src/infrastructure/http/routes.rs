@@ -1,9 +1,9 @@
-use axum::response::Html;
+use axum::response::{Html, IntoResponse};
 
-pub async fn not_found() -> Html<&'static str> {
+pub async fn not_found() -> impl IntoResponse {
     Html("<h1>Not Found</h1>")
 }
 
-pub async fn root() -> Html<&'static str> {
+pub async fn root() -> impl IntoResponse {
     Html("<h1>Hello, World!</h1>")
 }

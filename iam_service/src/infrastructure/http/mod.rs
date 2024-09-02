@@ -1,21 +1,35 @@
 use anyhow::Context;
-use axum::{middleware, routing::get, Router};
-use std::{future::ready, time::Duration};
+use axum::{
+    middleware,
+    routing::{get, post},
+    Extension, Router,
+};
+use std::{future::ready, sync::Arc, time::Duration};
 use tower_http::{compression::CompressionLayer, timeout::TimeoutLayer};
+
+use crate::{
+    application::services::account_service::AccountService,
+    presentation::controllers::account_controller::create_account_handler,
+};
 
 mod middlewares;
 mod routes;
 mod servers;
 mod utils;
 
-pub async fn start_main_host(port: u16) -> anyhow::Result<()> {
+pub async fn start_main_host(
+    port: u16,
+    account_service: Arc<AccountService>,
+) -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(routes::root))
+        .route("/accounts", post(create_account_handler))
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))
         .layer(middlewares::tracer_layer())
         .layer(TimeoutLayer::new(Duration::from_secs(10)))
-        .layer(CompressionLayer::new());
+        .layer(CompressionLayer::new())
+        .layer(Extension(account_service));
     servers::start_host(app, port).await
 }
 

@@ -1,15 +1,14 @@
 use anyhow::{Context, Result};
-use std::env;
 use dotenvy;
+use std::env;
 
 pub mod configuration;
 pub use configuration::Configuration;
 
-
 impl Configuration {
     pub fn from_env() -> Result<Self> {
-
-        dotenvy::from_path_override(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".env")).context("Failed to load .env file")?;
+        dotenvy::from_path_override(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".env"))
+            .context("Failed to load .env file")?;
 
         let main_port: u16 = env::var("MAIN_PORT")
             .context("Must be set to the MAIN_PORT server will listen on")?

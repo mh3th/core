@@ -1,6 +1,8 @@
+use serde::Serialize;
 use uuid::Uuid;
 
 /// Сущность Account, представляющая аккаунт пользователя.
+#[derive(Debug, Serialize, Clone)]
 pub struct Account {
     pub id: Uuid,
     pub username: String,

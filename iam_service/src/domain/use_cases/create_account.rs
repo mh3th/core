@@ -33,7 +33,7 @@ where
 #[async_trait]
 impl<UCR> CreateAccountUseCase for CreateAccount<UCR>
 where
-    UCR: AccountCreateRepository + Sync + Send,
+    UCR: AccountCreateRepository + Sync + Send + 'static,
 {
     async fn execute(
         &self,

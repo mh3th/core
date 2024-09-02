@@ -29,7 +29,7 @@ where
 #[async_trait]
 impl<UCR> ReadAccountUseCase for ReadAccount<UCR>
 where
-    UCR: AccountReadRepository + Sync + Send,
+    UCR: AccountReadRepository + Sync + Send + 'static,
 {
     async fn execute(&self, id: Uuid) -> Result<Option<Account>, Error> {
         self.repository.find_by_id(id).await
