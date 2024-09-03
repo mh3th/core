@@ -1,0 +1,21 @@
+{% extends "pages/index.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}{% endblock %}
+{% block body %}
+<main class="flex place-items-center justify-center min-h-[70vh] bg-white">
+    <div class="text-center">
+        <h1 class="animate-pulse mt-4 text-5xl font-bold tracking-tight text-blue-900 sm:text-8xl">Coming</h1>
+        <h1 class="animate-pulse mt-4 text-3xl font-bold tracking-tight text-blue-600 sm:text-5xl">soon</h1>
+        Contact us
+        <span aria-hidden="true">&rarr;</span>
+        </button>
+        <div class="mt-4">
+            <a href="/contacts" class="rounded-md bg-indigo-600 px-3.5 py-2.5 font-semibold
+            text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2
+            focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-xl sm:text-3xl">
+                Contact us
+            </a>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -5,11 +5,11 @@ use axum::{
     Extension, Router,
 };
 use std::{future::ready, sync::Arc, time::Duration};
-use tower_http::{compression::CompressionLayer, timeout::TimeoutLayer};
+use tower_http::{compression::CompressionLayer, services::ServeDir, timeout::TimeoutLayer};
 
 use crate::{
     application::services::account_service::AccountService,
-    presentation::controllers::account_controller::create_account_handler,
+    presentation::controllers::{account_controller::create_account_handler, index_controller::index_handler},
 };
 
 mod middlewares;
@@ -22,8 +22,9 @@ pub async fn start_main_host(
     account_service: Arc<AccountService>,
 ) -> anyhow::Result<()> {
     let app = Router::new()
-        .route("/", get(routes::root))
+        .route("/", get(index_handler))
         .route("/accounts", post(create_account_handler))
+        .nest_service("/static", ServeDir::new("dist/static"))
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))
         .layer(middlewares::tracer_layer())
