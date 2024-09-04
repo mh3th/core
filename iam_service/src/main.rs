@@ -43,9 +43,9 @@ async fn main() -> anyhow::Result<()> {
         account_repository.clone(),
     ));
     let account_service = Arc::new(application::services::account_service::AccountService::new(
-        create_account_use_case.clone(),
-        read_account_use_case.clone(),
-        find_account_use_case.clone(),
+        create_account_use_case,
+        read_account_use_case,
+        find_account_use_case,
     ));
     let main_server_task = tokio::spawn(infrastructure::http::start_main_host(
         configuration.main_port,
