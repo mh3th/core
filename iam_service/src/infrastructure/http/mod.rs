@@ -9,7 +9,7 @@ use tower_http::{compression::CompressionLayer, services::ServeDir, timeout::Tim
 
 use crate::{
     application::services::account_service::AccountService,
-    presentation::controllers::{account_controller::create_account_handler, index_controller::index_handler},
+    presentation::controllers::*,
 };
 
 mod middlewares;
@@ -22,8 +22,9 @@ pub async fn start_main_host(
     account_service: Arc<AccountService>,
 ) -> anyhow::Result<()> {
     let app = Router::new()
-        .route("/", get(index_handler))
-        .route("/accounts", post(create_account_handler))
+        .route("/", get(index_controller::index_handler))
+        .route("/contacts", get(contacts_controller::index_handler))
+        .route("/accounts", post(account_controller::create_account_handler))
         .nest_service("/static", ServeDir::new("dist/static"))
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))
