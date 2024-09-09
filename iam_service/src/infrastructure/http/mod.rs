@@ -23,7 +23,7 @@ pub async fn start_main_host(
 ) -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(index_controller::index_handler))
-        .route("/register", get(register_controller::indexx_handler))
+        .route("/register", get(register_controller::index_handler))
         .nest_service("/static", ServeDir::new("dist/static"))
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))

@@ -13,7 +13,7 @@ invalid:ring-inset invalid:ring-red-400 valid:ring-2 valid:ring-inset valid:ring
             </h1>
         </div>
         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form class="space-y-6" hx-post="/sign-up" hx-swap="outerHTML"
+            <form class="space-y-6" hx-post="/accounts" hx-swap="outerHTML"
                 hx-on:input="
                     event.target.setCustomValidity('');
                     if (!event.target.checkValidity()) {

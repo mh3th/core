@@ -4,7 +4,7 @@ use crate::presentation::views::pages::register::Index;
 pub static EMAIL_PATTERN: &str =
     r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,10})";
 pub static PASSWORD_PATTERN: &str = r"^(?=.*[^\w\s]).{5,200}$";
-pub async fn indexx_handler() -> impl IntoResponse {
+pub async fn index_handler() -> impl IntoResponse {
     Index{
         title: "Registration",
         email_title: "Your email",

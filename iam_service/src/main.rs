@@ -36,16 +36,8 @@ async fn main() -> anyhow::Result<()> {
     let create_account_use_case = Arc::new(domain::use_cases::create_account::CreateAccount::new(
         account_repository.clone(),
     ));
-    // let read_account_use_case = Arc::new(domain::use_cases::read_account::ReadAccount::new(
-    //     account_repository.clone(),
-    // ));
-    // let find_account_use_case = Arc::new(domain::use_cases::find_account::FindAccount::new(
-    //     account_repository.clone(),
-    // ));
     let account_service = Arc::new(application::services::account_service::AccountService::new(
         create_account_use_case,
-        // read_account_use_case,
-        // find_account_use_case,
     ));
     let main_server_task = tokio::spawn(infrastructure::http::start_main_host(
         configuration.main_port,
