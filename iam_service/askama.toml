@@ -1,2 +1,3 @@
 [general]
 dirs = ["src/presentation/views"]
+whitespace = "suppress"

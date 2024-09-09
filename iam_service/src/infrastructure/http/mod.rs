@@ -1,7 +1,7 @@
 use anyhow::Context;
 use axum::{
     middleware,
-    routing::{get, post},
+    routing::get,
     Extension, Router,
 };
 use std::{future::ready, sync::Arc, time::Duration};
@@ -15,7 +15,7 @@ use crate::{
 mod middlewares;
 mod routes;
 mod servers;
-mod utils;
+mod metrics;
 
 pub async fn start_main_host(
     port: u16,
@@ -23,8 +23,7 @@ pub async fn start_main_host(
 ) -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(index_controller::index_handler))
-        .route("/contacts", get(contacts_controller::index_handler))
-        .route("/accounts", post(account_controller::create_account_handler))
+        .route("/register", get(register_controller::indexx_handler))
         .nest_service("/static", ServeDir::new("dist/static"))
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))
@@ -37,7 +36,7 @@ pub async fn start_main_host(
 
 pub async fn start_metrics_host(port: u16) -> anyhow::Result<()> {
     let recorder_handle =
-        utils::setup_metrics_recorder().context("failed to setup metrics recorder")?;
+        metrics::setup_metrics_recorder().context("failed to setup metrics recorder")?;
     let router = Router::new().route("/metrics", get(move || ready(recorder_handle.render())));
     servers::start_host(router, port).await
 }

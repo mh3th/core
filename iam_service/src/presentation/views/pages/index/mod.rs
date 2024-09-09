@@ -1,4 +1,4 @@
-use askama::Template;
+use askama_axum::Template;
 
 #[derive(Template)]
 #[template(path = "pages/index/index.html")]
