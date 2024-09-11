@@ -1,21 +1,15 @@
 use anyhow::Context;
-use axum::{
-    middleware,
-    routing::get,
-    Extension, Router,
-};
-use std::{future::ready, sync::Arc, time::Duration};
+use axum::{middleware, routing::get, Extension, Router};
+use tower_sessions::{cookie::time::Duration, Expiry, MemoryStore, SessionManagerLayer};
+use std::{future::ready, sync::Arc};
 use tower_http::{compression::CompressionLayer, services::ServeDir, timeout::TimeoutLayer};
 
-use crate::{
-    application::services::account_service::AccountService,
-    presentation::controllers::*,
-};
+use crate::{application::services::account_service::AccountService, presentation::controllers::*};
 
+mod metrics;
 mod middlewares;
 mod routes;
 mod servers;
-mod metrics;
 
 pub async fn start_main_host(
     port: u16,
@@ -28,8 +22,13 @@ pub async fn start_main_host(
         .fallback(routes::not_found)
         .route_layer(middleware::from_fn(middlewares::track_metrics))
         .layer(middlewares::tracer_layer())
-        .layer(TimeoutLayer::new(Duration::from_secs(10)))
+        .layer(TimeoutLayer::new(std::time::Duration::from_secs(10)))
         .layer(CompressionLayer::new())
+        .layer(
+            SessionManagerLayer::new(MemoryStore::default())
+                .with_secure(false)
+                .with_expiry(Expiry::OnInactivity(Duration::seconds(10)))
+        )
         .layer(Extension(account_service));
     servers::start_host(app, port).await
 }
