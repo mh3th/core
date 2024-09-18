@@ -10,13 +10,13 @@ use sqlx::Error;
 // use uuid::Uuid;
 
 /// Сервис для работы с аккаунтами, объединяющий различные сценарии использования.
-pub struct AccountService {
-    create_account_use_case: Arc<dyn CreateAccountUseCase + Sync + Send>,
+pub struct AccountService <T: CreateAccountUseCase + Sync + Send> {
+   create_account_use_case: Arc<T>,
 }
 
-impl AccountService {
+impl<T: CreateAccountUseCase + Sync + Send> AccountService<T> {
     pub fn new(
-        create_account_use_case: Arc<dyn CreateAccountUseCase + Sync + Send>,
+        create_account_use_case: Arc<T>,
     ) -> Self {
         Self {
             create_account_use_case,

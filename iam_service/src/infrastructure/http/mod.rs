@@ -4,17 +4,20 @@ use tower_sessions::{cookie::time::Duration, Expiry, MemoryStore, SessionManager
 use std::{future::ready, sync::Arc};
 use tower_http::{compression::CompressionLayer, services::ServeDir, timeout::TimeoutLayer};
 
-use crate::{application::services::account_service::AccountService, presentation::controllers::*};
+use crate::{application::services::account_service::AccountService, domain::use_cases::create_account::CreateAccountUseCase, presentation::controllers::*};
 
 mod metrics;
 mod middlewares;
 mod routes;
 mod servers;
 
-pub async fn start_main_host(
+pub async fn start_main_host<T>(
     port: u16,
-    account_service: Arc<AccountService>,
-) -> anyhow::Result<()> {
+    account_service: Arc<AccountService<T>>,
+) -> anyhow::Result<()>
+where
+    T: CreateAccountUseCase + Sync + Send + 'static,
+ {
     let app = Router::new()
         .route("/", get(index_controller::index_handler))
         .route("/register", get(register_controller::index_handler))

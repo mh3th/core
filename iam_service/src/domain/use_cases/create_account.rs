@@ -20,9 +20,7 @@ pub struct CreateAccount<UCR> {
     repository: Arc<UCR>,
 }
 
-impl<UCR> CreateAccount<UCR>
-where
-    UCR: AccountCreateRepository + Sync + Send + 'static,
+impl<UCR:AccountCreateRepository + Sync + Send + 'static> CreateAccount<UCR>
 {
     pub fn new(repository: Arc<UCR>) -> Self {
         Self { repository }
@@ -30,9 +28,7 @@ where
 }
 
 #[async_trait]
-impl<UCR> CreateAccountUseCase for CreateAccount<UCR>
-where
-    UCR: AccountCreateRepository + Sync + Send + 'static,
+impl<UCR:AccountCreateRepository + Sync + Send + 'static> CreateAccountUseCase for CreateAccount<UCR>
 {
     async fn execute(
         &self,
